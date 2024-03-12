@@ -24,7 +24,7 @@ load_rc_config $name
 : ${listmonk_pidfile:="/var/run/listmonk.pid"}
 : ${listmonk_username:="listmonk"}
 listmonk_group=${listmonk_group:-$listmonk_user}
-: ${listmonk_chown:=yes}
+
 
 pidfile="${listmonk_pidfile}"
 procname="/usr/local/bin/listmonk"
