@@ -12,14 +12,14 @@
 name="listmonk"
 desc="Standalone, self-hosted, newsletter and mailing list manager"
 rcvar="listmonk_enable"
-chdir
+
 
 load_rc_config $name
 
 : ${listmonk_enable:="NO"}
 : ${listmonk_dir:="/usr/local/etc/listmonk"}
-: ${listmonk_chdir:="${listmonk_dir}"}
-: ${listmonk_config_file:="${listmonk_dir}/config.yml"}
+: ${listmonk_config_file:="${listmonk_dir}/config.toml"}
+: ${listmonk_static_dir:="${listmonk_dir}/static"}
 : ${listmonk_logfile:="/var/log/listmonk.log"}
 : ${listmonk_pidfile:="/var/run/listmonk.pid"}
 : ${listmonk_username:="listmonk"}
@@ -29,7 +29,7 @@ listmonk_group=${listmonk_group:-$listmonk_user}
 pidfile="${listmonk_pidfile}"
 procname="/usr/local/bin/listmonk"
 command="/usr/sbin/daemon"
-command_args="-o '${listmonk_logfile}' -p '${pidfile}' -u '${listmonk_username}' -t '${desc}' -- ${procname}"
+command_args="-o '${listmonk_logfile}' -p '${pidfile}' -u '${listmonk_username}' -t '${desc}' -- ${procname} --config ${listmonk_config_file} --static-dir ${listmonk_static_dir}"
 start_precmd="listmonk_precmd"
 
 listmonk_precmd()
@@ -45,13 +45,16 @@ listmonk_precmd()
     if [ ! -d "${listmonk_dir}" ]; then
         mkdir -p "${listmonk_dir}"
     fi
+    if [ ! -d "${listmonk_static_dir}" ]; then
+        mkdir -p "${listmonk_static_dir}"
+    fi
     # Check if config file exist
     if [ ! -e "${listmonk_config_file}" ]; then
-        cp /usr/local/share/listmonk/config_sample.yml "${listmonk_config_file}"
+        ( cd ${listmonk_dir} ; ${procname} --new-config )
     fi
-    # Chown config file
+    # Chown listmonk folder
     if checkyesno listmonk_chown; then
-        chown "${listmonk_username}":"${listmonk_group}" "${listmonk_config_file}"
+        chown "${listmonk_username}":"${listmonk_group}" "${listmonk_dir}"
     fi
 }
 
