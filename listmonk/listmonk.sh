@@ -22,24 +22,25 @@ load_rc_config $name
 : ${listmonk_static_dir:="${listmonk_dir}/static"}
 : ${listmonk_logfile:="/var/log/listmonk.log"}
 : ${listmonk_pidfile:="/var/run/listmonk.pid"}
-: ${listmonk_username:="listmonk"}
-listmonk_group=${listmonk_group:-$listmonk_user}
+: ${listmonk_daemon_user:="listmonk"}
+: ${listmonk_daemon_group}:="${listmonk_daemon_user}"
+: ${listmonk_chown:=yes}
 
 
 pidfile="${listmonk_pidfile}"
 procname="/usr/local/bin/listmonk"
 command="/usr/sbin/daemon"
-command_args="-o '${listmonk_logfile}' -p '${pidfile}' -u '${listmonk_username}' -t '${desc}' -- ${procname} --config ${listmonk_config_file} --static-dir ${listmonk_static_dir}"
+command_args="-o '${listmonk_logfile}' -p '${pidfile}' -u '${listmonk_daemon_user}' -t '${desc}' -- ${procname} --config ${listmonk_config_file} --static-dir ${listmonk_static_dir}"
 start_precmd="listmonk_precmd"
 
 listmonk_precmd()
 {
     # Check if user exist
-    if id -u $listmonk_username > /dev/null 2>&1; then
+    if id -u $listmonk_daemon_user > /dev/null 2>&1; then
             echo "User found, it's OK"
     else
             echo "User not found, create one"
-            pw useradd -n "${listmonk_username}" -u 1000  -m
+            pw useradd -n "${listmonk_daemon_user}" -u 1000  -m
     fi
     # Check if folder exist
     if [ ! -d "${listmonk_dir}" ]; then
@@ -54,7 +55,7 @@ listmonk_precmd()
     fi
     # Chown listmonk folder
     if checkyesno listmonk_chown; then
-        chown "${listmonk_username}":"${listmonk_group}" "${listmonk_dir}"
+        chown "${listmonk_daemon_user}":"${listmonk_daemon_group}" "${listmonk_dir}"
     fi
 }
 

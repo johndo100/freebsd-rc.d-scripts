@@ -29,24 +29,24 @@ load_rc_config $name
 : ${distribyted_webdav_port:=36911}
 : ${distribyted_logfile:="/var/log/distribyted.log"}
 : ${distribyted_pidfile:="/var/run/distribyted.pid"}
-: ${distribyted_username:="distribyted"}
-distribyted_group=${distribyted_group:-$distribyted_user}
+: ${daemon_user:="distribyted"}
+daemon_group=${daemon_group:-$daemon_user}
 : ${distribyted_chown:=yes}
 
 pidfile="${distribyted_pidfile}"
 procname="/usr/local/bin/distribyted"
 command="/usr/sbin/daemon"
-command_args="-o '${distribyted_logfile}' -p '${pidfile}' -u '${distribyted_username}' -t '${desc}' -- ${procname} --config '${distribyted_config_file}' --http-port '${distribyted_http_port}' --webdav-port '${distribyted_webdav_port}'"
+command_args="-o '${distribyted_logfile}' -p '${pidfile}' -u '${daemon_user}' -t '${desc}' -- ${procname} --config '${distribyted_config_file}' --http-port '${distribyted_http_port}' --webdav-port '${distribyted_webdav_port}'"
 start_precmd="distribyted_precmd"
 
 distribyted_precmd()
 {
     # Check if user exist
-    if id -u $distribyted_username > /dev/null 2>&1; then
+    if id -u $daemon_user > /dev/null 2>&1; then
             echo "User found, it's OK"
     else
             echo "User not found, create one"
-            pw useradd -n "${distribyted_username}" -u 1000  -m
+            pw useradd -n "${daemon_user}" -u 1000  -m
     fi
     # Check if folder exist
     if [ ! -d "${distribyted_dir}" ]; then
@@ -73,7 +73,7 @@ distribyted_precmd()
     fi
     # Chown distribyted folder
     if checkyesno distribyted_chown; then
-        chown -R "${distribyted_username}":"${distribyted_group}" "${distribyted_dir}"
+        chown -R "${daemon_user}":"${daemon_group}" "${distribyted_dir}"
     fi
 }
 

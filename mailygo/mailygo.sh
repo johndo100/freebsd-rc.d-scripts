@@ -27,8 +27,8 @@ load_rc_config ${name}
 : ${mailygo_blacklist:="gambling,casino"}
 : ${mailygo_logfile:="/var/log/mailygo.log"}
 : ${mailygo_pidfile:="/var/run/mailygo.pid"}
-: ${mailygo_username:="mailygo"}
-mailygo_group=${mailygo_group:-$mailygo_user}
+: ${mailygo_daemon_user:="mailygo"}
+mailygo_daemon_group=${mailygo_daemon_group:-$mailygo_daemon_user}
 
 export_variable()
 {
@@ -47,11 +47,11 @@ export_variables()
 mailygo_precmd()
 {
     # Check if user exist
-    if id -u $mailygo_username > /dev/null 2>&1; then
+    if id -u $mailygo_daemon_user > /dev/null 2>&1; then
             echo "User found, it's OK"
     else
             echo "User not found, create one"
-            pw useradd -n "${mailygo_username}" -u 1000  -m
+            pw useradd -n "${mailygo_daemon_user}" -u 1000  -m
     fi
 	export_variables SMTP_USER SMTP_PASS SMTP_HOST SMTP_PORT EMAIL_FROM EMAIL_TO ALLOWED_TO PORT HONEYPOTS GOOGLE_API_KEY BLACKLIST
 }
@@ -59,7 +59,7 @@ mailygo_precmd()
 pidfile="${mailygo_pidfile}"
 procname="/usr/local/bin/mailygo"
 command="/usr/sbin/daemon"
-command_args="-o '${mailygo_logfile}' -p '${pidfile}' -u '${mailygo_username}' -t '${desc}' -- ${procname}"
+command_args="-o '${mailygo_logfile}' -p '${pidfile}' -u '${mailygo_daemon_user}' -t '${desc}' -- ${procname}"
 start_precmd="mailygo_precmd"
 
 run_rc_command "$1"

@@ -19,8 +19,8 @@ load_rc_config ${name}
 : ${microbin_chdir:="/usr/local/etc/microbin"}
 : ${microbin_logfile:="/var/log/microbin.log"}
 : ${microbin_pidfile:="/var/run/microbin.pid"}
-: ${microbin_username:="microbin"}
-microbin_group=${microbin_group:-$microbin_user}
+: ${microbin_daemon_user:="microbin"}
+microbin_daemon_group=${microbin_daemon_group:-$microbin_daemon_user}
 : ${microbin_chown:=yes}
 # Microbin Environment variables
 : ${microbin_basic_auth_username:=""}
@@ -83,11 +83,11 @@ export_variables()
 microbin_precmd()
 {
     # Check if user exist
-    if id -u $microbin_username > /dev/null 2>&1; then
+    if id -u $microbin_daemon_user > /dev/null 2>&1; then
             echo "User found, it's OK"
     else
             echo "User not found, create one"
-            pw useradd -n "${microbin_username}" -u 1000  -m
+            pw useradd -n "${microbin_daemon_user}" -u 1000  -m
     fi
     # Check if folder exist
     if [ ! -d "${microbin_dir}" ]; then
@@ -95,7 +95,7 @@ microbin_precmd()
     fi
     # Chown data folder
     if checkyesno microbin_chown; then
-        chown -R "${microbin_username}":"${microbin_group}" "${microbin_dir}"
+        chown -R "${microbin_daemon_user}":"${microbin_daemon_group}" "${microbin_dir}"
     fi
     # export variables
 	export_variables MICROBIN_BASIC_AUTH_USERNAME MICROBIN_BASIC_AUTH_PASSWORD MICROBIN_ADMIN_USERNAME MICROBIN_ADMIN_PASSWORD MICROBIN_EDITABLE MICROBIN_FOOTER_TEXT MICROBIN_HIDE_HEADER MICROBIN_HIDE_FOOTER MICROBIN_HIDE_LOGO MICROBIN_NO_LISTING MICROBIN_HIGHLIGHTSYNTAX MICROBIN_PORT MICROBIN_BIND MICROBIN_PRIVATE MICROBIN_PURE_HTML MICROBIN_DATA_DIR MICROBIN_JSON_DB MICROBIN_PUBLIC_PATH MICROBIN_SHORT_PATH MICROBIN_UPLOADER_PASSWORD MICROBIN_READONLY MICROBIN_SHOW_READ_STATS MICROBIN_TITLE MICROBIN_THREADS MICROBIN_GC_DAYS MICROBIN_ENABLE_BURN_AFTER MICROBIN_DEFAULT_BURN_AFTER MICROBIN_WIDE MICROBIN_QR MICROBIN_ETERNAL_PASTA MICROBIN_ENABLE_READONLY MICROBIN_DEFAULT_EXPIRY MICROBIN_NO_FILE_UPLOAD MICROBIN_CUSTOM_CSS MICROBIN_HASH_IDS MICROBIN_ENCRYPTION_CLIENT_SIDE MICROBIN_ENCRYPTION_SERVER_SIDE MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB MICROBIN_DISABLE_UPDATE_CHECKING MICROBIN_DISABLE_TELEMETRY MICROBIN_LIST_SERVER
@@ -104,7 +104,7 @@ microbin_precmd()
 pidfile="${microbin_pidfile}"
 procname="/usr/local/bin/microbin"
 command="/usr/sbin/daemon"
-command_args="-o '${microbin_logfile}' -p '${pidfile}' -u '${microbin_username}' -t '${desc}' -- ${procname}"
+command_args="-o '${microbin_logfile}' -p '${pidfile}' -u '${microbin_daemon_user}' -t '${desc}' -- ${procname}"
 start_precmd="microbin_precmd"
 
 run_rc_command "$1"

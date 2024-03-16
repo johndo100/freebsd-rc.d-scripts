@@ -18,8 +18,8 @@ load_rc_config ${name}
 : ${flaresolverr_dir:="/usr/local/etc/flaresolverr"}
 : ${flaresolverr_logfile:="/var/log/flaresolverr.log"}
 : ${flaresolverr_pidfile:="/var/run/flaresolverr.pid"}
-: ${flaresolverr_username:="flaresolverr"}
-flaresolverr_group=${flaresolverr_group:-$flaresolverr_user}
+: ${daemon_user:="flaresolverr"}
+daemon_group=${daemon_group:-$daemon_user}
 : ${flaresolverr_chown:=yes}
 # flaresolverr Environment variables
 : ${flaresolverr_log_level:="info"}
@@ -52,11 +52,11 @@ export_variables()
 flaresolverr_precmd()
 {
     # Check if user exist
-    if id -u $flaresolverr_username > /dev/null 2>&1; then
+    if id -u $daemon_user > /dev/null 2>&1; then
             echo "User found, it's OK"
     else
             echo "User not found, create one"
-            pw useradd -n "${flaresolverr_username}" -u 1000  -m
+            pw useradd -n "${daemon_user}" -u 1000  -m
     fi
     # Check if folder exist
     if [ ! -d "${flaresolverr_dir}" ]; then
@@ -64,7 +64,7 @@ flaresolverr_precmd()
     fi
     # Chown data folder
     if checkyesno flaresolverr_chown; then
-        chown -R "${flaresolverr_username}":"${flaresolverr_group}" "${flaresolverr_dir}"
+        chown -R "${daemon_user}":"${daemon_group}" "${flaresolverr_dir}"
     fi
     # export variables
 	export_variables LOG_LEVEL LOG_HTML CAPTCHA_SOLVER TZ LANG HEADLESS BROWSER_TIMEOUT TEST_URL PORT HOST PROMETHEUS_ENABLED PROMETHEUS_PORT
@@ -74,7 +74,7 @@ pidfile="${flaresolverr_pidfile}"
 py_script="${flaresolverr_dir}/src/flaresolverr.py"
 python="/usr/local/bin/python3.9"
 command="/usr/sbin/daemon"
-command_args="-o '${flaresolverr_logfile}' -P '${pidfile}' -u '${flaresolverr_username}' -t '${desc}' ${python} ${py_script}"
+command_args="-o '${flaresolverr_logfile}' -P '${pidfile}' -u '${daemon_user}' -t '${desc}' ${python} ${py_script}"
 start_precmd="flaresolverr_precmd"
 
 run_rc_command "$1"

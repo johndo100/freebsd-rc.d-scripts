@@ -21,24 +21,24 @@ load_rc_config $name
 : ${mailbear_config_file:="${mailbear_dir}/config.yml"}
 : ${mailbear_logfile:="/var/log/mailbear.log"}
 : ${mailbear_pidfile:="/var/run/mailbear.pid"}
-: ${mailbear_username:="mailbear"}
-mailbear_group=${mailbear_group:-$mailbear_user}
+: ${mailbear_daemon_user:="mailbear"}
+mailbear_daemon_group=${mailbear_daemon_group:-$mailbear_daemon_user}
 : ${mailbear_chown:=yes}
 
 pidfile="${mailbear_pidfile}"
 procname="/usr/local/bin/mailbear"
 command="/usr/sbin/daemon"
-command_args="-o '${mailbear_logfile}' -p '${pidfile}' -u '${mailbear_username}' -t '${desc}' -- ${procname}"
+command_args="-o '${mailbear_logfile}' -p '${pidfile}' -u '${mailbear_daemon_user}' -t '${desc}' -- ${procname}"
 start_precmd="mailbear_precmd"
 
 mailbear_precmd()
 {
     # Check if user exist
-    if id -u $mailbear_username > /dev/null 2>&1; then
+    if id -u $mailbear_daemon_user > /dev/null 2>&1; then
             echo "User found, it's OK"
     else
             echo "User not found, create one"
-            pw useradd -n "${mailbear_username}" -u 1000  -m
+            pw useradd -n "${mailbear_daemon_user}" -u 1000  -m
     fi
     # Check if folder exist
     if [ ! -d "${mailbear_dir}" ]; then
@@ -50,7 +50,7 @@ mailbear_precmd()
     fi
     # Chown config file
     if checkyesno mailbear_chown; then
-        chown "${mailbear_username}":"${mailbear_group}" "${mailbear_config_file}"
+        chown "${mailbear_daemon_user}":"${mailbear_daemon_group}" "${mailbear_config_file}"
     fi
 }
 
