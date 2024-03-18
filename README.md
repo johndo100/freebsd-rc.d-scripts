@@ -2,6 +2,8 @@
 
 This repository contain some of my FreeBSD rc.d scripts.
 
+The script will automatic create an user with `uid` = `1000`, so you may need to change `uid` to other number. I'm running most of programs in jail so it's not a problem.
+
 I made them after I read some resources bellow:
 
 - [Practical rc.d scripting in BSD](https://docs.freebsd.org/en/articles/rc-scripting)
