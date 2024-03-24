@@ -1,6 +1,6 @@
 # This is a configuration file example. You can edit it and add and remove torrents
 # and magnet URIs. Read the following comments for more info.
-# /usr/local/etc/distribyted/data/config/config.yaml
+# /usr/local/distribyted/config/config.yaml
 
 # HTTP specific configuration.
 http:
@@ -25,7 +25,7 @@ torrent:
   global_cache_size: 2048
 
   # Folder where distribyted metadata will be stored.
-  metadata_folder: /usr/local/etc/distribyted/data/metadata
+  metadata_folder: /usr/local/distribyted/data/metadata
 
   # Disable IPv6.
   #disable_ipv6: true
@@ -56,13 +56,13 @@ fuse:
   # For windows users: 
   #   - You can set here also a disk letter like X: or Z:.
   #   - The folder MUST NOT exists.
-  path: /usr/local/etc/distribyted/data/mount
+  path: /usr/local/distribyted/data/mount
   # Add this flag if you want to allow other users to access this fuse mountpoint.
   # You need to add user_allow_other flag to /etc/fuse.conf file.
   # allow_other: true 
 
 log:
-  path: /usr/local/etc/distribyted/data/logs
+  path: /usr/local/distribyted/data/logs
 
   # MaxBackups is the maximum number of old log files to retain.  The default
   # is to retain all old log files (though MaxAge may still cause them to get
@@ -101,7 +101,7 @@ routes:
 # List of folders where the content will be transformed to a magnet link. You can share any content sending that magnet link to others.
 servers:
   - name: server
-    path: /usr/local/etc/distribyted/data/served-folders/server
+    path: /usr/local/distribyted/data/served-folders/server
 
     # Get trackers from web text file. The file will be loaded every time a magnet uri is generated,
     # so all trackers will be up to date.
