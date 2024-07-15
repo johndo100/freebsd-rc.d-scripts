@@ -4,7 +4,6 @@
 # REQUIRE: LOGIN
 # KEYWORD: shutdown
 #
-# create rc script
 # mkdir /usr/local/etc/rc.d
 # touch /usr/local/etc/rc.d/dufs
 # chmod +x /usr/local/etc/rc.d/dufs
